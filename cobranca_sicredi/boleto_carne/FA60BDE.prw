@@ -1,18 +1,19 @@
 #include 'protheus.ch'
 #include 'parmtype.ch'
 #include 'rwmake.ch'
+#include 'topconn.ch'
 #include 'totvs.ch'
 /*/{Protheus.doc} FA60BDE
 Ponto de entrada para gravação de dados complementares na montagem do borderô, aplicando a gravação do "Nosso Número" do Banco Sicredi de acordo com a parametrização disponibilizada pelo banco.
 @author Rodrigo Telecio (ALLSS - rodrigo.telecio@allss.com.br)
-@since 20/07/2020
+@since 08/08/2020
 @version P12.1.25
 @type Function	
-@param nil, nulo, nenhum
-@return nulo, nil  
+    @param nil, nulo, nenhum
+    @return nulo, nil  
 @obs Sem observações até o momento 
 @see https://allss.com.br/
-@history 20/07/2020, Rodrigo Telecio (rodrigo.telecio@allss.com.br), Aplicação no ambiente de produção.
+@history 08/08/2020, Rodrigo Telecio (rodrigo.telecio@allss.com.br), Aplicação no ambiente de produção.
 /*/
 user function FA60BDE()
 local aAreaSE1      := SE1->(GetArea())
@@ -102,7 +103,7 @@ if SA6->A6_COD $ '748'
             _nSomaTot   += Val(SubStr(AllTrim(_cNum),_x,1)) * _aSeq[_nSeq]
         next _x
         if MOD(_nSomaTot,11) <> 0
-            _nResto     := iif(AllTrim(Str((11 - (MOD(_nSomaTot,11))))) == 10,"0",AllTrim(Str((11 - (MOD(_nSomaTot,11))))))
+            _nResto     := iif(AllTrim(Str((11 - (MOD(_nSomaTot,11))))) == "10","0",AllTrim(Str((11 - (MOD(_nSomaTot,11))))))
         else
             _nResto     := AllTrim(Str(0))
         endif

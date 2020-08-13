@@ -1,20 +1,21 @@
 #include 'protheus.ch'
 #include 'parmtype.ch'
 #include 'rwmake.ch'
+#include 'topconn.ch'
 #include 'totvs.ch'
 #define ENT CHR(13)+CHR(10)
 static cDirTmp := GetTempPath()
 /*/{Protheus.doc} BOLSICREDI
 Impressão do boleto do Banco Sicredi (formato carnê) de acordo com a parametrização disponibilizada pelo banco.
 @author Rodrigo Telecio (ALLSS - rodrigo.telecio@allss.com.br)
-@since 20/07/2020
+@since 08/08/2020
 @version P12.1.25
 @type Function	
-@param nil, nulo, nenhum
-@return nulo, nil  
+    @param nil, nulo, nenhum
+    @return nulo, nil  
 @obs Sem observações até o momento 
 @see https://allss.com.br/
-@history 20/07/2020, Rodrigo Telecio (rodrigo.telecio@allss.com.br), Aplicação no ambiente de produção.
+@history 08/08/2020, Rodrigo Telecio (rodrigo.telecio@allss.com.br), Aplicação no ambiente de produção.
 /*/
 user function BOLSICREDI()
 private oPrn
