@@ -175,7 +175,7 @@ while !SE1TMP->(EOF())
         cFatVen     := SE1->E1_VENCTO - StoD("19971007")
         cBarra      := SubStr(SEE->EE_CODIGO,1,3)						//001 a 003 - C๓digo do Banco
         cBarra      += iif(SE1->E1_MOEDA == 1,'9','0')					//004 a 004 - C๓digo da Moeda
-        cBarra      += "1"												//005 a 005 - DV C๓digo de Barras
+        //cBarra      += "1"												//005 a 005 - DV C๓digo de Barras
         cBarra      += StrZero(cFatVen,4)           					//006 a 009 - Fator de Vencimento
         cBarra      += StrZero(Round(((Round(_nSaldo,2))*100),0),10)	//010 a 019 - Valor (arredondado com 02 decimais)
         cTempBar    := ""
@@ -676,17 +676,17 @@ for _nX := 1 to 3
 	if _nX == 1
 		//Cแlculo do Primeiro Campo
 		cLinha    := SubStr(cBarra,1,4)
-		cLinha    += SubStr(cBarra,20,1) + "." + SubStr(cBarra,21,4)
+		cLinha    += SubStr(cBarra,19,1) + "." + SubStr(cBarra,20,4)
 		_nSeq     := 0
 		_nRegCont := Len(AllTrim(cLinha))
 	elseif _nX == 2
 		//Cแlculo do Segundo Campo
-		cLinha    := SubStr(cBarra,25,5) + "." + SubStr(cBarra,30,5)
+		cLinha    := SubStr(cBarra,24,5) + "." + SubStr(cBarra,29,5)
 		_nSeq     := 0
 		_nRegCont := Len(AllTrim(cLinha))
 	elseif _nX == 3
 		//Cแlculo do Terceiro Campo
-		cLinha    := SubStr(cBarra,35,5) + "." + SubStr(cBarra,40,5)
+		cLinha    := SubStr(cBarra,34,5) + "." + SubStr(cBarra,39,5)
 		_nSeq     := 0
 		_nRegCont := Len(AllTrim(cLinha))
 	endif
@@ -713,11 +713,44 @@ for _nX := 1 to 3
 	&("cLinha" + cValToChar(_nX)) := cLinha + cValToChar(_cDv) + Space(01)
 Next _nX
 if Type("cLinha1") <> "U" .AND. Type("cLinha2") <> "U" .AND. Type("cLinha3") <> "U"
-	cLinha := cLinha1 + cLinha2 +cLinha3 + SubStr(cBarra,5,1) + Space(01) + SubStr(cBarra,6,14)
+    cLinha := cLinha1 + cLinha2 +cLinha3 + CalcDVG(cBarra) + Space(01) + SubStr(cBarra,5,14)    
 else
     Aviso('TOTVS','Problemas na composi็ใo da linha digitแvel. Contate o administrador.',{'OK'},3,'Cancelamento de opera็ใo')
 endif
 Return(cLinha)
+/*ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma ณ CalcDVG   บAutor ณ Rodrigo Telecio         Data ณ01/09/2020 บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.    ณ Calculo do digito verificador geral do c๓digo de barras     นฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso      ณ Programa principal                                          นฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿*/
+static function CalcDVG(cTempBar)
+local _nX           := 0
+local _nSeq			:= 0
+local _aSeq         := {4,3,2,9,8,7,6,5,4,3,2,9,8,7,6,5,4,3,2,9,8,7,6,5,4,3,2,9,8,7,6,5,4,3,2,9,8,7,6,5,4,3,2}
+Local _nSomaTot		:= 0
+Local _cDac			:= ""
+for _nX := 1 to Len(AllTrim(cTempBar))
+	if _nSeq == Len(_aSeq)
+		_nSeq   := 0
+	endif
+    _nSeq++
+	_nSomaTot   += Val(SubStr(AllTrim(cTempBar),_nX,1)) * _aSeq[_nSeq]
+next _nX
+if MOD(_nSomaTot,11) <> 0
+	_cDac := AllTrim(Str((11 - (MOD(_nSomaTot,11)))))
+    if _cDac == "10"
+        _cDac := "1"
+    endif
+else
+	_cDac := AllTrim(Str(0))
+endif
+Return(_cDac)
 /*
 ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
 ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
